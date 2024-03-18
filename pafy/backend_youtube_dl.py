@@ -2,6 +2,7 @@ import sys
 import time
 import logging
 import os
+import subprocess
 
 if sys.version_info[:2] >= (3, 0):
     # pylint: disable=E0611,F0401,I0011
@@ -9,16 +10,14 @@ if sys.version_info[:2] >= (3, 0):
 else:
     uni = unicode
 
-import youtube_dl
+import yt_dlp as youtube_dl
 
 from . import g
 from .backend_shared import BasePafy, BaseStream, remux, get_status_string, get_size_done
 
 dbg = logging.debug
 
-
 early_py_version = sys.version_info[:2] < (2, 7)
-
 
 class YtdlPafy(BasePafy):
     def __init__(self, *args, **kwargs):
@@ -47,10 +46,8 @@ class YtdlPafy(BasePafy):
         self._title = self._ydl_info['title']
         self._author = self._ydl_info['uploader']
         self._rating = self._ydl_info['average_rating']
-        self._length = self._ydl_info['duration']
+        self._length = self._ydl_info['duration'] if not self._ydl_info['is_live'] else -1
         self._viewcount = self._ydl_info['view_count']
-        self._likes = self._ydl_info.get('like_count', 0)
-        self._dislikes = self._ydl_info.get('dislike_count', 0)
         self._username = self._ydl_info['uploader_id']
         self._category = self._ydl_info['categories'][0] if self._ydl_info['categories'] else ''
         self._bestthumb = self._ydl_info['thumbnails'][0]['url']
@@ -103,20 +100,18 @@ class YtdlStream(BaseStream):
             self._mediatype = 'normal'
 
         self._threed = info.get('format_note') == '3D'
-        self._rawbitrate = info.get('abr', 0) * 1024
+        self._rawbitrate = (info.get('abr') or 0) * 1024
 
         height = info.get('height') or 0
         width = info.get('width') or 0
         self._resolution = str(width) + 'x' + str(height)
         self._dimensions = width, height
-        self._bitrate = str(info.get('abr', 0)) + 'k'
+        self._bitrate = str(info.get('abr') or 0) + 'k'
         self._quality = self._bitrate if self._mediatype == 'audio' else self._resolution
 
         self._extension = info['ext']
         self._notes = info.get('format_note') or ''
         self._url = info.get('url')
-        if self._url.startswith("https://manifest.googlevideo.com"):
-            self._url = info.get('fragment_base_url', self._url)
 
         self._info = info
 
@@ -180,13 +175,11 @@ class YtdlStream(BaseStream):
         infodict = {'url': self.url}
 
         downloader.download(filepath, infodict)
-        print("")
+        print()
 
         if remux_audio and self.mediatype == "audio":
-            os.rename(filepath, filepath + '.temp')
+            subprocess.run(['mv', filepath, filepath + '.temp'])
             remux(filepath + '.temp', filepath, quiet=quiet, muxer=remux_audio)
-
-        return filepath
 
 
 class ydl:
