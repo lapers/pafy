@@ -3,6 +3,7 @@
 
 """ setup.py for pafy.
 
+Forked from
 https://github.com/mps-youtube/pafy
 
 python setup.py sdist bdist_wheel
@@ -19,13 +20,13 @@ setup(
     version=__version__,
     description="Retrieve YouTube content and metadata",
     keywords=["pafy", "API", "YouTube", "youtube", "download", "video"],
-    author="np1",
-    author_email="np1nagev@gmail.com",
-    url="https://github.com/mps-youtube/pafy/",
-    download_url="https://github.com/mps-youtube/pafy/tags",
+    author="",
+    author_email="",
+    url="https://github.com/lapers/pafy/",
+    download_url="https://github.com/lapers/pafy/tags",
     extras_require={
-        'youtube-dl-backend': ["yt-dlp"],
-        },
+        'youtube-dl-backend': ["yt-dlp"]
+    },
     package_data={"": ["LICENSE", "README.rst", "CHANGELOG", "AUTHORS"]},
     include_package_data=True,
     license='LGPLv3',
@@ -41,17 +42,14 @@ setup(
         "Operating System :: Microsoft :: Windows :: Windows XP",
         "Operating System :: Microsoft :: Windows :: Windows Vista",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.11",
         "Intended Audience :: Developers",
         "Development Status :: 5 - Production/Stable",
         "Topic :: Multimedia :: Sound/Audio :: Capture/Recording",
         "Topic :: Utilities",
         "Topic :: Multimedia :: Video",
         "Topic :: Internet :: WWW/HTTP"],
-    long_description=open("README.rst").read()
+    long_description=open("README.md").read()
 )
